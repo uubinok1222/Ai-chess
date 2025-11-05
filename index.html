@@ -2,114 +2,102 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>AI Chess</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Chessboard.js & Chess.js -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
-
-  <style>
-    body {
-      background: #1b1b1b;
-      color: white;
-      font-family: "Segoe UI", sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
-    .menu {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      background: #111;
-      padding: 10px;
-      position: sticky;
-      top: 0;
-    }
-    button {
-      padding: 10px 18px;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-      font-size: 15px;
-      background: #444;
-      color: white;
-      transition: 0.3s;
-    }
-    button:hover { background: #666; }
-    button.active { background: #0a84ff; }
-    .section { display: none; margin-top: 20px; }
-    #pvpSection { display: block; }
-    #themeToggle {
-      position: fixed;
-      bottom: 15px;
-      right: 15px;
-      font-size: 20px;
-    }
-    #boardAI, #boardPVP {
-      margin: 0 auto;
-      width: 400px;
-      height: 400px;
-    }
-    .ready { background: #0a84ff; }
-    .ai-settings {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 10px;
-    }
-    input, select {
-      padding: 5px;
-      border-radius: 5px;
-      border: none;
-      outline: none;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Chơi cờ vua với AI: OpenAI, Grok, Gemini. Quân cờ Merida SVG chuẩn Lichess."/>
+  <title>AI Chess Pro - Merida SVG</title>
+  <link rel="icon" href="assets/pieces/wK.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"/>
 </head>
-
 <body>
-  <div class="menu">
-    <button id="pvpBtn" class="active">⚔️ Đấu Người</button>
-    <button id="botBtn">🤖 Đấu Bot</button>
+  <div class="header">
+    <h1>AI Chess Pro</h1>
+    <p>Đấu cờ với AI: OpenAI • Grok • Gemini – Quân cờ <strong>Merida SVG</strong> chuẩn Lichess</p>
+  </div>
+
+  <div class="container" id="mode-selection">
+    <button class="btn-mode" onclick="setMode('pvp')">Đấu với Người</button>
+    <button class="btn-mode" onclick="setMode('pvb')">Người vs Bot</button>
+    <button class="btn-mode" onclick="setMode('bvb')">Bot vs Bot</button>
   </div>
 
   <!-- PvP -->
-  <div id="pvpSection" class="section">
-    <h2>Người vs Người</h2>
-    <div id="boardPVP"></div>
+  <div id="pvp" class="container mode hidden">
+    <p><strong>Luân phiên kéo thả. Trắng đi trước.</strong></p>
+    <div id="board"></div>
+    <div id="status">Lượt: Trắng</div>
+    <button class="btn" onclick="resetGame()">Chơi lại</button>
   </div>
 
-  <!-- AI Section -->
-  <div id="botSection" class="section">
-    <h2>Bot vs Bot</h2>
-    <div class="ai-settings">
-      <div>
-        <p>⚪ Trắng</p>
-        <select id="whiteModel">
-          <option value="gpt-4o-mini">ChatGPT</option>
-          <option value="grok">Grok</option>
-          <option value="gemini">Gemini</option>
-        </select><br>
-        <input id="whiteKey" placeholder="API key Trắng">
+  <!-- PvB -->
+  <div id="pvb" class="container mode hidden">
+    <div class="ai-block">
+      <h4>Chọn AI cho Bot</h4>
+      <select id="pvb-ai" onchange="toggleApi('pvb')">
+        <option value="">-- Chọn AI --</option>
+        <option value="openai">OpenAI (GPT)</option>
+        <option value="grok">Grok (xAI)</option>
+        <option value="gemini">Gemini (Google)</option>
+      </select>
+      <div id="pvb-api" class="api-input hidden">
+        <input type="password" id="pvb-key" placeholder="API Key"/>
+        <button class="btn-confirm" onclick="lockApi('pvb')">Đồng ý</button>
       </div>
-      <div>
-        <p>⚫ Đen</p>
-        <select id="blackModel">
-          <option value="gpt-4o-mini">ChatGPT</option>
+      <div id="pvb-locked" class="locked hidden">Đã khóa</div>
+    </div>
+
+    <div class="side-selection">
+      <p>Chọn màu của bạn:</p>
+      <button class="btn-side" data-side="white" onclick="setPlayerSide('white')">Trắng</button>
+      <button class="btn-side" data-side="black" onclick="setPlayerSide('black')">Đen</button>
+    </div>
+
+    <div id="board"></div>
+    <div id="status">Chọn AI và màu để bắt đầu</div>
+  </div>
+
+  <!-- BvB -->
+  <div id="bvb" class="container mode hidden">
+    <div class="ai-grid">
+      <div class="ai-block">
+        <h4>Trắng</h4>
+        <select id="white-ai" onchange="toggleApi('white')">
+          <option value="">-- AI --</option>
+          <option value="openai">OpenAI</option>
           <option value="grok">Grok</option>
           <option value="gemini">Gemini</option>
-        </select><br>
-        <input id="blackKey" placeholder="API key Đen">
+        </select>
+        <div id="white-api" class="api-input hidden">
+          <input type="password" id="white-key" placeholder="API Key"/>
+          <button class="btn-confirm" onclick="lockApi('white')">Đồng ý</button>
+        </div>
+        <div id="white-locked" class="locked hidden">Đã khóa</div>
+      </div>
+
+      <div class="ai-block">
+        <h4>Đen</h4>
+        <select id="black-ai" onchange="toggleApi('black')">
+          <option value="">-- AI --</option>
+          <option value="openai">OpenAI</option>
+          <option value="grok">Grok</option>
+          <option value="gemini">Gemini</option>
+        </select>
+        <div id="black-api" class="api-input hidden">
+          <input type="password" id="black-key" placeholder="API Key"/>
+          <button class="btn-confirm" onclick="lockApi('black')">Đồng ý</button>
+        </div>
+        <div id="black-locked" class="locked hidden">Đã khóa</div>
       </div>
     </div>
-    <button id="startAI" style="margin-top:15px;">▶️ Bắt đầu trận Bot vs Bot</button>
-    <div id="boardAI" style="margin-top:20px;"></div>
+
+    <button id="start-bvb" class="btn-start hidden" onclick="startBvB()">Bắt đầu Bot vs Bot</button>
+    <div id="board"></div>
+    <div id="status">Chọn AI cho cả 2 bên</div>
   </div>
 
-  <button id="themeToggle">🌞</button>
-
-  <script src="script.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+  <script src="https://unpkg.com/chess.js@1.0.0-beta.6/chess.min.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

@@ -2,63 +2,113 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
+  <title>AI Chess</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>♟️ AI CHESS – Đấu trí cùng trí tuệ nhân tạo</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/1.0.0/chess.min.js"></script>
+
+  <!-- Chessboard.js & Chess.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+  <style>
+    body {
+      background: #1b1b1b;
+      color: white;
+      font-family: "Segoe UI", sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    .menu {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      background: #111;
+      padding: 10px;
+      position: sticky;
+      top: 0;
+    }
+    button {
+      padding: 10px 18px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 15px;
+      background: #444;
+      color: white;
+      transition: 0.3s;
+    }
+    button:hover { background: #666; }
+    button.active { background: #0a84ff; }
+    .section { display: none; margin-top: 20px; }
+    #pvpSection { display: block; }
+    #themeToggle {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      font-size: 20px;
+    }
+    #boardAI, #boardPVP {
+      margin: 0 auto;
+      width: 400px;
+      height: 400px;
+    }
+    .ready { background: #0a84ff; }
+    .ai-settings {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 10px;
+    }
+    input, select {
+      padding: 5px;
+      border-radius: 5px;
+      border: none;
+      outline: none;
+    }
+  </style>
 </head>
 
 <body>
-  <header>
-    <h1>♟️ AI CHESS – Đấu trí cùng trí tuệ nhân tạo</h1>
-    <div id="mode-switch">
-      <button id="pvpBtn" class="active">Đấu Người</button>
-      <button id="botBtn">Đấu Bot</button>
-      <button id="themeToggle" class="floating">🌞</button>
-    </div>
-  </header>
+  <div class="menu">
+    <button id="pvpBtn" class="active">⚔️ Đấu Người</button>
+    <button id="botBtn">🤖 Đấu Bot</button>
+  </div>
 
-  <!-- Người vs Người -->
-  <section id="pvpSection">
-    <h2>Chế độ Người chơi vs Người chơi</h2>
-    <div id="boardPVP" class="board"></div>
-  </section>
+  <!-- PvP -->
+  <div id="pvpSection" class="section">
+    <h2>Người vs Người</h2>
+    <div id="boardPVP"></div>
+  </div>
 
-  <!-- Bot vs Bot -->
-  <section id="botSection" style="display: none;">
-    <h2>Chế độ AI</h2>
-    <div class="ai-options">
-      <button id="aivsaiBtn" class="active">Bot vs Bot</button>
-    </div>
-
-    <div class="bot-config">
-      <div class="bot-side">
-        <h3>Quân Trắng</h3>
+  <!-- AI Section -->
+  <div id="botSection" class="section">
+    <h2>Bot vs Bot</h2>
+    <div class="ai-settings">
+      <div>
+        <p>⚪ Trắng</p>
         <select id="whiteModel">
           <option value="gpt-4o-mini">ChatGPT</option>
           <option value="grok">Grok</option>
           <option value="gemini">Gemini</option>
-        </select>
-        <input id="whiteKey" placeholder="API key" />
-        <button id="readyWhite">Sẵn sàng</button>
+        </select><br>
+        <input id="whiteKey" placeholder="API key Trắng">
       </div>
-
-      <div class="bot-side">
-        <h3>Quân Đen</h3>
+      <div>
+        <p>⚫ Đen</p>
         <select id="blackModel">
           <option value="gpt-4o-mini">ChatGPT</option>
           <option value="grok">Grok</option>
           <option value="gemini">Gemini</option>
-        </select>
-        <input id="blackKey" placeholder="API key" />
-        <button id="readyBlack">Sẵn sàng</button>
+        </select><br>
+        <input id="blackKey" placeholder="API key Đen">
       </div>
     </div>
+    <button id="startAI" style="margin-top:15px;">▶️ Bắt đầu trận Bot vs Bot</button>
+    <div id="boardAI" style="margin-top:20px;"></div>
+  </div>
 
-    <button id="startAI">▶️ Bắt đầu trận Bot vs Bot</button>
-    <div id="boardAI" class="board"></div>
-  </section>
+  <button id="themeToggle">🌞</button>
 
   <script src="script.js"></script>
 </body>

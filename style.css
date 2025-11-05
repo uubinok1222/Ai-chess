@@ -1,0 +1,53 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+:root {
+  --bg: #fff;
+  --text: #000;
+  --btn: #007bff;
+  --btn-text: #fff;
+}
+
+body.dark {
+  --bg: #000;
+  --text: #fff;
+}
+
+header {
+  padding: 10px;
+}
+
+button {
+  margin: 5px;
+  padding: 8px 16px;
+  background: var(--btn);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button.active {
+  background: #28a745;
+}
+
+.floating {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  border-radius: 50%;
+  font-size: 22px;
+}
+
+.board {
+  width: 90vw;
+  max-width: 400px;
+  margin: 20px auto;
+  border: 2px solid #000;
+  pointer-events: none; /* người không thể tương tác */
+}
